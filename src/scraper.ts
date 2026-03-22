@@ -39,8 +39,8 @@ async function main() {
     await page.goto('https://books.toscrape.com/', { timeout: 15000 });
     console.log('Homepage loaded');
 
-    // BUG 1: '.book-title' does not exist on this page
-    const bookTitle = await page.textContent('.book-title', { timeout: 5000 });
+    // BUG 1 fixed: use the actual anchor inside h3 within article.product_pod
+    const bookTitle = await page.textContent('article.product_pod h3 a', { timeout: 5000 });
     console.log(`First book: ${bookTitle}`);
 
     // ── Step 2: Click into the book detail page ──────────────
