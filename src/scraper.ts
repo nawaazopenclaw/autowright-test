@@ -49,11 +49,11 @@ async function main() {
 
     // ── Step 3: Extract availability ─────────────────────────
     // Extract the book price from the detail page
-    const price = await page.textContent('.product-price', { timeout: 5000 });
+    const price = await page.textContent('.price_color', { timeout: 5000 });
     console.log(`Price: ${price?.trim()}`);
 
     // Extract availability
-    const availability = await page.textContent('.stock-info', { timeout: 5000 });
+    const availability = await page.textContent('.instock', { timeout: 5000 });
     console.log(`Availability: ${availability?.trim()}`);
 
     console.log('Scraper completed successfully!');
