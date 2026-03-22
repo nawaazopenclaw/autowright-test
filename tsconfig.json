@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@autowright/browser": ["../autowright-v3/packages/browser/src"],
+      "@autowright/browser/*": ["../autowright-v3/packages/browser/src/*"],
+      "@autowright/shared": ["../autowright-v3/shared/src"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}
