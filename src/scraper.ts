@@ -47,13 +47,13 @@ async function main() {
     await page.click('article.product_pod h3 a', { timeout: 5000 });
     console.log('Navigated to book detail');
 
-    // BUG 2 fixed: use the actual submit button inside the add-to-basket form
-    await page.click('button.btn-primary', { timeout: 5000 });
-    console.log('Added to cart');
-
     // ── Step 3: Extract availability ─────────────────────────
-    // BUG 3 fixed: use the actual availability paragraph class
-    const availability = await page.textContent('.instock.availability', { timeout: 5000 });
+    // Extract the book price from the detail page
+    const price = await page.textContent('.product-price', { timeout: 5000 });
+    console.log(`Price: ${price?.trim()}`);
+
+    // Extract availability
+    const availability = await page.textContent('.stock-info', { timeout: 5000 });
     console.log(`Availability: ${availability?.trim()}`);
 
     console.log('Scraper completed successfully!');
