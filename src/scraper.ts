@@ -1,13 +1,13 @@
 /**
- * Autowright Real-World E2E Test Scraper
+ * Autowright Multi-Bug E2E Test — books.toscrape.com
  *
- * This script scrapes quotes from https://quotes.toscrape.com
- * It has an intentionally WRONG selector that will fail, triggering
- * the Autowright error capture → fixer → PR pipeline.
+ * 3-step scraping flow with 3 intentional bugs:
+ *   Bug 1: Wrong selector for book title on listing page
+ *   Bug 2: Wrong selector for "Add to basket" on detail page
+ *   Bug 3: Wrong selector for availability text
  *
- * The correct selector is '.quote .text' but we use '.quote-text'
- * which doesn't exist. The fixer should read the DOM artifact,
- * find the correct selector, and fix this file.
+ * Each run hits one bug. Merge the fix PR, re-run, hit the next bug.
+ * Three cycles to full healing.
  */
 
 import { chromium } from '@autowright/browser';
@@ -16,7 +16,7 @@ async function main() {
   const browser = await chromium.launch({
     headless: true,
     autowright: {
-      scriptId: 'quotes-scraper',
+      scriptId: 'books-scraper',
       serviceUrl: process.env.SERVICE_URL || 'http://localhost:4400',
       repoUrl: 'https://github.com/nawaazopenclaw/autowright-test',
       scriptPath: 'src/scraper.ts',
@@ -35,20 +35,28 @@ async function main() {
   const page = await browser.newPage();
 
   try {
-    // Navigate to the quotes site
-    await page.goto('https://quotes.toscrape.com/', { timeout: 15000 });
-    console.log('Page loaded');
+    // ── Step 1: Homepage — get first book title ──────────────
+    await page.goto('https://books.toscrape.com/', { timeout: 15000 });
+    console.log('Homepage loaded');
 
-    // Get the page title
-    const title = await page.title();
-    console.log(`Title: ${title}`);
+    // BUG 1: '.book-title' does not exist on this page
+    const bookTitle = await page.textContent('.book-title', { timeout: 5000 });
+    console.log(`First book: ${bookTitle}`);
 
-    // BUG: This selector is WRONG — the correct one is '.quote .text'
-    // The fixer should read the DOM, find the right selector, and fix this
-    const firstQuote = await page.textContent('.quote .text', { timeout: 5000 });
-    console.log(`First quote: ${firstQuote}`);
+    // ── Step 2: Click into the book detail page ──────────────
+    await page.click('article.product_pod h3 a', { timeout: 5000 });
+    console.log('Navigated to book detail');
 
-    console.log('Scraper completed successfully');
+    // BUG 2: '.add-to-cart-btn' does not exist on this page
+    await page.click('.add-to-cart-btn', { timeout: 5000 });
+    console.log('Added to cart');
+
+    // ── Step 3: Extract availability ─────────────────────────
+    // BUG 3: '.stock-status' does not exist on this page
+    const availability = await page.textContent('.stock-status', { timeout: 5000 });
+    console.log(`Availability: ${availability?.trim()}`);
+
+    console.log('Scraper completed successfully!');
   } catch (err) {
     console.error('Scraper failed:', (err as Error).message);
     process.exitCode = 1;
