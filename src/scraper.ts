@@ -45,7 +45,7 @@ async function main() {
 
     // BUG: This selector is WRONG — the correct one is '.quote .text'
     // The fixer should read the DOM, find the right selector, and fix this
-    const firstQuote = await page.textContent('.quote-text', { timeout: 5000 });
+    const firstQuote = await page.textContent('.quote .text', { timeout: 5000 });
     console.log(`First quote: ${firstQuote}`);
 
     console.log('Scraper completed successfully');
